@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Disaster Resource Allocator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h1>🚨 Disaster Communication & Rescue Resource Allocator</h1>
+
+<div class="box">
+    <h2>Add Resource</h2>
+    <input id="rtype" placeholder="Type (Ambulance)">
+    <input id="rlat" placeholder="Latitude">
+    <input id="rlon" placeholder="Longitude">
+    <button onclick="addResource()">Add</button>
+</div>
+
+<div class="box">
+    <h2>Report Incident</h2>
+    <input id="ilat" placeholder="Latitude">
+    <input id="ilon" placeholder="Longitude">
+    <select id="severity">
+        <option value="1">Low</option>
+        <option value="2">Medium</option>
+        <option value="3">High</option>
+    </select>
+    <button onclick="reportIncident()">Report</button>
+</div>
+
+<div class="box">
+    <h2>Status</h2>
+    <pre id="status"></pre>
+</div>
+
+<script>
+function addResource() {
+    fetch("/add_resource", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            type: rtype.value,
+            lat: rlat.value,
+            lon: rlon.value
+        })
+    }).then(updateStatus);
+}
+
+function reportIncident() {
+    fetch("/report_incident", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            lat: ilat.value,
+            lon: ilon.value,
+            severity: severity.value
+        })
+    }).then(updateStatus);
+}
+
+function updateStatus() {
+    fetch("/status")
+        .then(res => res.json())
+        .then(data => status.innerText = JSON.stringify(data, null, 2));
+}
+
+updateStatus();
+</script>
+
+</body>
+</html>
